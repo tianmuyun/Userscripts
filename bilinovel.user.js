@@ -17,28 +17,25 @@
   const currentUrl = window.location.href;
   const introduceURL = /www\.linovelib\.com\/novel\/\d+.html/;
   const contentURL = /www\.linovelib\.com\/novel\/\d+\/\d+(_\d+)*.html/;
+
   // 执行对应函数
   if (introduceURL.test(currentUrl)) {
-    GM_registerMenuCommand("添加简介按钮");
     addIntroBtn();
   } else if (contentURL.test(currentUrl)) {
-    GM_registerMenuCommand("移除文本选中限制");
-    GM_registerMenuCommand("修改字体");
     removeOnSelectStart();
     modifyFont("霞鹜文楷 Medium"); // 修改字体
-  } else {
-    GM_registerMenuCommand("未执行脚本");
   }
 
   // 移除文本选中限制
   function removeOnSelectStart() {
-    var body = document.querySelector("body");
+    const body = document.querySelector("body");
     body.removeAttribute("onselectstart");
   }
+
   // 修改字体
   function modifyFont(FontFamily = "微软雅黑") {
-    var title = document.getElementById("mlfy_main_text");
-    var text = document.getElementById("TextContent");
+    const title = document.getElementById("mlfy_main_text");
+    const text = document.getElementById("TextContent");
     if (title) {
       title.style.fontSize = "24px";
       title.style.color = "#000";
@@ -56,9 +53,9 @@
     const div = document.querySelector(".book-dec.Jbook-dec.hide");
     if (div) {
       const divTag = document.createElement("div");
+      const pTag = document.createElement("p");
       divTag.style.display = "flex";
       divTag.style.justifyContent = "flex-end"; // 让按钮右对齐
-      const pTag = document.createElement("p");
       pTag.textContent = "展开简介";
       pTag.style.color = "blue";
       pTag.style.cursor = "pointer"; // 设置鼠标悬停时显示手型
@@ -67,6 +64,7 @@
       div.appendChild(divTag);
     }
   }
+
   // 获取小说简介
   function getIntro() {
     const bookDecDiv = document.querySelector(".book-dec.Jbook-dec.hide");
@@ -82,65 +80,54 @@
       alert("没有找到 class='book-dec Jbook-dec hide' 的 div 元素");
     }
   }
+
   function addMask(data) {
     // 添加遮罩层
     const mask = document.createElement("div");
     mask.id = "maskLayer";
     document.body.appendChild(mask);
-
     // 添加悬浮窗
     const floatingWindow = document.createElement("div");
     floatingWindow.id = "floatingWindow";
     document.body.appendChild(floatingWindow);
-
     // 创建悬浮窗的内容
     const content = document.createElement("div");
     content.innerHTML = data;
     floatingWindow.appendChild(content);
-
-    // 添加关闭按钮
-    const closeButton = document.createElement("button");
-    closeButton.id = "closeButton";
-    closeButton.textContent = "关闭";
-    floatingWindow.appendChild(closeButton);
-
     // 设置样式
     GM_addStyle(`
-        #maskLayer {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
-          z-index: 9998;
-          display: block;
-        }
-        #floatingWindow {
-          position: fixed;
-          top: 20%;
-          left: 50%;
-          transform: translateX(-50%);
-          background-color: white;
-          padding: 20px;
-          border-radius: 8px;
-          z-index: 9999;
-          width: 720px;
-          font-size: 18px;
-        }
-        #closeButton {
-            display: block;
-            margin-left: auto;
-            padding: 4px 8px;
-            font-size: 18px;
-        }
+      #maskLayer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+        display: block;
+      }
+      #floatingWindow {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        z-index: 9999;
+        width: 720px;
+        font-size: 20px;
+      }
     `);
-
-    // 关闭按钮的事件处理
-    closeButton.addEventListener("click", function () {
+    // 点击遮罩层关闭悬浮窗
+    mask.addEventListener("click", function () {
       // 隐藏遮罩层和浮动窗口
       mask.style.display = "none";
       floatingWindow.style.display = "none";
+    });
+    // 阻止点击悬浮窗内部内容时关闭
+    floatingWindow.addEventListener("click", function (event) {
+      event.stopPropagation(); // 阻止事件冒泡，避免触发遮罩层的点击事件
     });
   }
 })();
