@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         哔哩轻小说增强
 // @namespace    http://tampermonkey.net/
-// @version      2024-12-03
+// @version      2024-12-10
 // @description  详情页：添加展开简介。内容页：移除文本选中限制；自定义字体。
 // @author       tianmuyun
 // @match        https://www.linovelib.com/novel/*
@@ -53,16 +53,18 @@
 
   // 添加简介按钮
   function addIntroBtn() {
-    const btnGroupDiv = document.querySelector(".btn-group");
-    if (btnGroupDiv) {
-      const btn = document.createElement("button");
-      btn.textContent = "展开简介";
-      btn.style.padding = "6px 12px";
-      btn.style.fontSize = "14px";
-      btn.style.cursor = "pointer";
-      btn.style.marginLeft = "10px";
-      btn.addEventListener("click", getIntro); // 按钮绑定getIntro()
-      btnGroupDiv.appendChild(btn);
+    const div = document.querySelector(".book-dec.Jbook-dec.hide");
+    if (div) {
+      const divTag = document.createElement("div");
+      divTag.style.display = "flex";
+      divTag.style.justifyContent = "flex-end"; // 让按钮右对齐
+      const pTag = document.createElement("p");
+      pTag.textContent = "展开简介";
+      pTag.style.color = "blue";
+      pTag.style.cursor = "pointer"; // 设置鼠标悬停时显示手型
+      pTag.addEventListener("click", getIntro); // 按钮绑定getIntro()
+      divTag.appendChild(pTag);
+      div.appendChild(divTag);
     }
   }
   // 获取小说简介
